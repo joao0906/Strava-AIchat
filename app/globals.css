@@ -1,0 +1,27 @@
+:root {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  background: radial-gradient(circle at top, rgba(30, 64, 175, 0.35), transparent 55%), #020617;
+  color: #e2e8f0;
+}
+
+a {
+  color: #38bdf8;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+main {
+  padding: 3rem 1.5rem;
+}
+
+section + section {
+  margin-top: 3rem;
+}

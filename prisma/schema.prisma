@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String?
+  email     String?   @unique
+  image     String?
+  accounts  Account[]
+  sessions  Session[]
+  athlete   Athlete?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Athlete {
+  id           String    @id @default(cuid())
+  userId       String    @unique
+  stravaId     Int       @unique
+  username     String?
+  firstname    String?
+  lastname     String?
+  city         String?
+  country      String?
+  sex          String?
+  profile      String?
+  accessToken  String
+  refreshToken String
+  expiresAt    Int
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activities   Activity[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Activity {
+  id                    String    @id @default(cuid())
+  athleteId             String
+  stravaId              Int       @unique
+  name                  String
+  type                  String
+  start_date            DateTime
+  moving_time           Int
+  elapsed_time          Int
+  distance              Float
+  total_elevation_gain  Float?
+  average_heartrate     Float?
+  max_heartrate         Float?
+  average_speed         Float?
+  max_speed             Float?
+  pace_s_per_km         Int?
+  calories              Float?
+  raw                   Json?
+  athlete               Athlete   @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  laps                  Lap[]
+  splits                Split[]
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Lap {
+  id             String   @id @default(cuid())
+  activityId     String
+  index          Int
+  distance       Float
+  moving_time    Int
+  average_speed  Float?
+  pace_s_per_km  Int?
+  raw            Json?
+  activity       Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+}
+
+model Split {
+  id             String   @id @default(cuid())
+  activityId     String
+  km             Int
+  moving_time    Int
+  distance       Float
+  average_speed  Float?
+  pace_s_per_km  Int?
+  activity       Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  channel   String
+  payload   Json
+  sentAt    DateTime?
+  createdAt DateTime @default(now())
+}
+
+model WebhookEvent {
+  id         String   @id @default(cuid())
+  type       String
+  payload    Json
+  receivedAt DateTime @default(now())
+}
